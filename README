@@ -1,0 +1,25 @@
+clife_kaolabo
+
+- 概要
+
+kaolabo.comのAPIとCEREVO LIFEのAPIをマッシュアップして、
+最近CEREVO LIFEにアップロードされた写真から
+顔検出された写真だけを抽出するデモアプリです。
+
+
+ - 利用方法
+
+必要なライブラリをインストールします
+sudo gem install sinatra
+sudo gem install httplib
+sudo gem install json
+
+各APIを利用するためのアカウントを設定します。
+sudo gem install pit
+ruby -e 'require "rubygems";require "pit";Pit.set("clife.cerevo.com", :data=>{"username"=>"yuiseki@gmail.com", "password"=>"dankogai"})'
+ruby -e 'require "rubygems";require "pit";Pit.set("kaolabo", :data=>{"apikey"=>"hogehogehogehoge"})'
+
+起動してブラウザで http://localhost:4566/ へアクセスします
+ruby app.rb
+
+
