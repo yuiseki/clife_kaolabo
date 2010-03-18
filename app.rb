@@ -22,7 +22,7 @@ helpers do
     c = HTTPClient.new
     c.set_auth(domain, $config['username'], $config['password'])
     # レスポンスをblockで扱おうとすると一行づつ処理してしまうので注意
-    res = c.get_content("http://#{$clife_domain}/api/rest1/photos")
+    res = c.get_content("http://#{$clife_domain}/api/rest1/photos?limit=50")
     begin
       photos = JSON.parse(res)
     rescue
@@ -76,6 +76,8 @@ end
 
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 # 全写真の一覧
@@ -84,7 +86,7 @@ get '/' do
   photo_ids = get_clife_photos
   array = []
   photo_ids.each do |k|
-    array.push "<img width='500px' src='http://localhost:4567/img/#{k}.jpg'><br />"
+    array.push "<img width='400px' src='/img/#{k}.jpg' title='#{k}'>"
   end
   array.to_s
 end
@@ -95,10 +97,10 @@ get '/face' do
   photo_ids = get_clife_photos
   array = []
   photo_ids.each do |k|
-    # apiレスポンスのファイルサイズをチェックする
+    # apiレスポンスのサイズをチェックする
     # 顔認識に成功している場合は、容量が135より大きくなる
     if face_detect(k).size > 135
-      array.push "<img width='500px' src='http://localhost:4567/img/#{k}.jpg'><br />"
+      array.push "<img width='400px' src='/img/#{k}.jpg' title='#{k}'>"
     end
   end
   array.to_s
@@ -117,12 +119,26 @@ end
 # clife webhook endpoint
 post '/' do
     puts params.inspect
-    photos = JSON.parse(params['photos'])
-    photos.each_pair do |key, value|
-      puts key
-      puts value.inspect
+    # 写真ごとPOSTされてきている場合
+    if params['imagedata']
+      File.open("tmp/img/#{params['photo_id']}.jpg", 'wb'){|f| f.write(params['imagedata'][:tempfile].read)}
     end
+    # album単位での送信の場合
+    if params['photos']
+      photos = JSON.parse(params['photos'])
+      photos.each_pair do |key, value|
+        puts key
+        puts value.inspect
+      end
+    end
+    ""
 end
+
+
+
+
+
+
 
 
 
